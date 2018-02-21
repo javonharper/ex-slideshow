@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Ex",
+  "version": "0.1",
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [ "<all_urls>" ],
+      "js": ["jquery.min.js", "content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
