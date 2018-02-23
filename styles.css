@@ -1,7 +1,12 @@
 /* @format */
 
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
 .ex {
   font-family: sans-serif;
+  z-index: 10000;
 }
 
 .toolbar {
@@ -33,6 +38,10 @@
   display: flex;
   justify-content: center;
   background-color: #333;
+}
+
+.no-zoom {
+  cursor: zoom-out;
 }
 
 .zoom-in {

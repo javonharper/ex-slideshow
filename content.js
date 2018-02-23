@@ -1,25 +1,58 @@
 // @format
 
+console.log('hello from content.js')
+
 const { h, app } = hyperapp
 
-console.log('hello from content.js')
+const fetchLinks = () => {
+  let links = []
+
+  // Gather links
+  $('a').each((i, el) => {
+    links.push(el.href)
+  })
+
+  $('img').each((i, el) => {
+    links.push(el.src)
+  })
+
+  return links
+}
+
+const extractUrls = links => {
+  const imageUrls = links.map(url => {
+    if (url.match(db.match)) {
+      return url.replace(db.match, db.replace)
+    }
+
+    if (url.match(yt.match)) {
+      return url.replace(yt.match, yt.replace)
+    }
+
+    if (url.match(ph.match)) {
+      return url.replace(ph.match, ph.replace)
+    }
+
+    return null
+  })
+
+  const images = imageUrls.filter(url => url !== null)
+
+  return images
+}
 
 const state = {
   zoomed: true,
   current: 0,
-  images: [
-    'https://images.unsplash.com/photo-1495572050486-a9b739c11fb9?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=7ed8945979820790676347b7c6b75174&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1489549132488-d00b7eee80f1?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=af611c47b827d67c95ce012231e8d02f&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=2ebe04dfc7c0713079bd12e06d35ddec&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1499865375034-7cccc6d92a18?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=d85b7e9ebb11067e6ccc2249374cfaa1&auto=format&fit=crop&w=800&q=60',
-    'https://images.unsplash.com/photo-1507963901243-ebfaecd5f2f4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8f1afdd53eeeeebe1d5fe866294c6da9&auto=format&fit=crop&w=800&q=60',
-  ],
+  images: [],
 }
 
 const actions = {
   toggleZoom: () => state => ({ zoomed: !state.zoomed }),
-  back: () => state => ({ current: state.current - 1 }),
-  next: () => state => ({ current: state.current + 1 }),
+  back: () => state => ({ current: Math.max(state.current - 1, 0) }),
+  next: () => state => ({
+    current: Math.min(state.current + 1, state.images.length - 1),
+  }),
 }
 
 const view = (state, actions) =>
@@ -33,7 +66,7 @@ const view = (state, actions) =>
     ]),
     h('div', { class: 'backdrop' }, [
       h('img', {
-        class: state.zoomed ? 'zoom-in' : '',
+        class: state.zoomed ? 'zoom-in' : 'no-zoom',
         onclick: () => actions.toggleZoom(),
         src: state.images[state.current],
       }),
@@ -43,6 +76,34 @@ const view = (state, actions) =>
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === 'clicked_browser_action') {
     $(document.body).prepend('<div class="ex" />')
-    app(state, actions, view, $('.ex')[0])
+
+    const links = fetchLinks()
+    const images = extractUrls(links)
+    const ex = app({ ...state, images }, actions, view, $('.ex')[0])
+
+    document.addEventListener('keydown', function(event) {
+      if (event.keyCode == 37) {
+        ex.back()
+      }
+
+      if (event.keyCode == 39) {
+        ex.next()
+      }
+    })
   }
 })
+
+const db = {
+  match: /(.+)_t\.jpg/,
+  replace: '$1.jpg',
+}
+
+const yt = {
+  match: /(.+)small(.+)/,
+  replace: '$1big$2',
+}
+
+const ph = {
+  match: /(.+)thumbs(.+)/,
+  replace: '$1images$2',
+}
