@@ -7,6 +7,8 @@ console.log('hello from content.js')
 const state = {
   zoomed: true,
   current: 0,
+  playing: false,
+  intervalId: null,
   images: [],
 }
 
@@ -18,6 +20,22 @@ const actions = {
     current: Math.min(state.current + 1, state.images.length - 1),
   }),
   setCurrent: i => state => ({ current: i }),
+  playPause: () => (state, actions) =>
+    state.playing ? actions.pause() : actions.play(),
+  play: () => (state, actions) => {
+    const id = setInterval(actions.next, 1000)
+    return {
+      playing: true,
+      intervalId: id,
+    }
+  },
+  pause: () => (state, actions) => {
+    clearInterval(state.intervalId)
+    return {
+      playing: false,
+      intervalId: null,
+    }
+  },
 }
 
 const view = (state, actions) =>
@@ -25,6 +43,7 @@ const view = (state, actions) =>
     h('div', { class: 'toolbar' }, [
       h('span', { class: 'toolbar-item' }, 'Full'),
       h('span', { class: 'toolbar-item' }, 'All'),
+      h('span', { class: 'toolbar-item', onclick: actions.play }, 'Play'),
       h('span', { class: 'toolbar-item', onclick: actions.back }, 'Back'),
       h('span', { class: 'toolbar-item', onclick: actions.next }, 'Next'),
       h('span', { class: 'toolbar-item', onclick: actions.close }, 'Close'),
@@ -56,7 +75,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 })
 
-
 const main = () => {
   $(document.body).prepend('<div id="ex" />')
 
@@ -72,8 +90,12 @@ const main = () => {
     if (event.keyCode == 39) {
       ex.next()
     }
-  })
 
+    if (event.keyCode == 32) {
+      event.preventDefault()
+      ex.playPause()
+    }
+  })
 
   $(document).ready(() => $('img').unveil())
 }
