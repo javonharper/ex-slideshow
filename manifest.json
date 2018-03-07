@@ -11,7 +11,12 @@
   "content_scripts": [
     {
       "matches": [ "<all_urls>" ],
-      "js": ["hyperapp.js", "jquery.min.js", "content.js"],
+      "js": [
+        "hyperapp.js", 
+        "jquery.min.js", 
+        "jquery.unveil.js",
+        "content.js"
+      ],
       "css": ["styles.css"]
     }
   ]
