@@ -124,9 +124,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 const main = () => {
+  const links = fetchLinks()
+  $(document.body).empty()
   $(document.body).prepend('<div id="ex" />')
 
-  const links = fetchLinks()
   const images = extractUrls(links)
   const ex = app({ ...state, images }, actions, view, $('#ex')[0])
 
@@ -158,20 +159,11 @@ const fetchLinks = () => {
 const extractUrls = links => {
   const images = links
     .map(url => {
-      if (url.match(db.match)) {
-        return url.replace(db.match, db.replace)
-      }
-
-      if (url.match(yt.match)) {
-        return url.replace(yt.match, yt.replace)
-      }
-
-      if (url.match(ph.match)) {
-        return url.replace(ph.match, ph.replace)
-      }
-
-      if (url.match(ig.match)) {
-        return url.replace(ig.match, ig.replace)
+      for (i in matchers) {
+        const matcher = matchers[i]
+        if (url.match(matcher.match)) {
+          return url.replace(matcher.match, matcher.replace)
+        }
       }
 
       return null
@@ -181,22 +173,24 @@ const extractUrls = links => {
   return images
 }
 
-const ig = {
-  match: /(.+)b\.jpg/,
-  replace: '$1.jpg',
-}
+const matchers = [
+  {
+    match: /(.+)b\.jpg/,
+    replace: '$1.jpg',
+  },
 
-const db = {
-  match: /(.+)_t\.jpg/,
-  replace: '$1.jpg',
-}
+  {
+    match: /(.+)_t\.jpg/,
+    replace: '$1.jpg',
+  },
 
-const yt = {
-  match: /(.+)small(.+)/,
-  replace: '$1big$2',
-}
+  {
+    match: /(.+)small(.+)/,
+    replace: '$1big$2',
+  },
 
-const ph = {
-  match: /(.+)thumbs(.+)/,
-  replace: '$1images$2',
-}
+  {
+    match: /(.+)thumbs(.+)/,
+    replace: '$1images$2',
+  },
+]
