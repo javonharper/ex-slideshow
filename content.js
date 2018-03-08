@@ -4,10 +4,17 @@ const { h, app } = hyperapp
 
 console.log('hello from content.js')
 
+const playSpeed = {
+  SLOW: 3000,
+  NORMAL: 1000,
+  FAST: 500
+}
+
 const state = {
   zoomed: true,
   current: 0,
   playing: false,
+  playSpeed: playSpeed.NORMAL,
   intervalId: null,
   images: [],
 }
@@ -23,7 +30,7 @@ const actions = {
   playPause: () => (state, actions) =>
     state.playing ? actions.pause() : actions.play(),
   play: () => (state, actions) => {
-    const id = setInterval(actions.next, 1000)
+    const id = setInterval(actions.next, state.playSpeed)
     return {
       playing: true,
       intervalId: id,
@@ -36,6 +43,11 @@ const actions = {
       intervalId: null,
     }
   },
+  setSpeed: playSpeed => (state, actions) => {
+    return {
+      playSpeed,
+    }
+  },
 }
 
 const view = (state, actions) =>
@@ -44,6 +56,43 @@ const view = (state, actions) =>
       h('span', { class: 'toolbar-item' }, 'Full'),
       h('span', { class: 'toolbar-item' }, 'All'),
       h('span', { class: 'toolbar-item', onclick: actions.play }, 'Play'),
+      h('span', { class: 'toolbar-item', onclick: actions.pause }, 'Pause'),
+      h(
+        'span',
+        {
+          class: 'toolbar-item',
+          onclick: () => {
+            actions.pause()
+            actions.setSpeed(playSpeed.SLOW)
+            actions.play()
+          },
+        },
+        'Slow',
+      ),
+      h(
+        'span',
+        {
+          class: 'toolbar-item',
+          onclick: () => {
+            actions.pause()
+            actions.setSpeed(playSpeed.NORMAL)
+            actions.play()
+          },
+        },
+        'Normal',
+      ),
+      h(
+        'span',
+        {
+          class: 'toolbar-item',
+          onclick: () => {
+            actions.pause()
+            actions.setSpeed(playSpeed.FAST)
+            actions.play()
+          },
+        },
+        'Fast',
+      ),
       h('span', { class: 'toolbar-item', onclick: actions.back }, 'Back'),
       h('span', { class: 'toolbar-item', onclick: actions.next }, 'Next'),
       h('span', { class: 'toolbar-item', onclick: actions.close }, 'Close'),
@@ -70,7 +119,6 @@ const view = (state, actions) =>
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === 'clicked_browser_action') {
-    console.log('taking off...')
     main()
   }
 })

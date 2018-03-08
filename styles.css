@@ -38,7 +38,7 @@ body {
 .backdrop {
   display: flex;
   justify-content: center;
-  background-color: #333;
+  background-color: black;
 }
 
 .no-zoom {
@@ -54,7 +54,8 @@ body {
 
 .thumbnails {
   display: flex;
-  margin-top: 10px;
+  background-color: black;
+  padding-top: 10px;
   padding-left: 150px;
   padding-right: 150px;
   overflow-x: auto;
