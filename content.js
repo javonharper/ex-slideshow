@@ -7,7 +7,7 @@ console.log('hello from content.js')
 const playSpeed = {
   SLOW: 3000,
   NORMAL: 1000,
-  FAST: 500
+  FAST: 500,
 }
 
 const state = {
@@ -182,7 +182,7 @@ const extractUrls = links => {
 }
 
 const ig = {
-  match: /(.+)\.jpg/,
+  match: /(.+)b\.jpg/,
   replace: '$1.jpg',
 }
 
