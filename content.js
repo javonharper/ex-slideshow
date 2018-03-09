@@ -22,7 +22,10 @@ const state = {
 const actions = {
   close: () => state => $('#ex').remove(),
   toggleZoom: () => state => ({ zoomed: !state.zoomed }),
-  back: () => state => ({ current: Math.max(state.current - 1, 0) }),
+  back: () => (state, actions) => {
+    actions.pause()
+    return { current: Math.max(state.current - 1, 0) }
+  },
   next: () => state => ({
     current: Math.min(state.current + 1, state.images.length - 1),
   }),

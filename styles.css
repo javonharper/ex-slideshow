@@ -12,8 +12,7 @@ body {
 
 .toolbar {
   padding: 10px;
-  background-color: #111;
-  opacity: 0.8;
+  background-color: #000000CC;
   position: fixed;
   width: 100vw;
   display: flex;
@@ -26,7 +25,7 @@ body {
 .toolbar-item {
   cursor: pointer;
   font-weight: 600;
-  color: #ccc;
+  color: #FFFFFFCC;
   padding: 5px;
   margin: 5px;
 }
@@ -47,19 +46,23 @@ body {
 
 .zoom-in {
   max-width: 100vw;
-  height: calc(100vh - 100px);
+  /* height: calc(100vh - 100px); */
+  height: 100vh;
   max-height: 100vh;
   cursor: zoom-in;
 }
 
 .thumbnails {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  background-color: black;
+  background-color: #000000CC;
   padding-top: 10px;
   padding-left: 150px;
   padding-right: 150px;
   overflow-x: auto;
-  margin-bottom: 10px;
   height: 100px;
 }
 
