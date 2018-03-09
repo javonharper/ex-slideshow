@@ -22,21 +22,25 @@ const state = {
 const actions = {
   close: () => state => $('#ex').remove(),
   toggleZoom: () => state => ({ zoomed: !state.zoomed }),
+  zoomOut: () => state => ({ zoomed: true }),
   back: () => (state, actions) => {
     actions.pause()
-    return { current: Math.max(state.current - 1, 0) }
+    actions.setCurrent(Math.max(state.current - 1, 0))
   },
-  next: () => state => ({
-    current: Math.min(state.current + 1, state.images.length - 1),
-  }),
-  setCurrent: i => state => ({ current: i }),
+  next: () => (state, actions) => {
+    actions.setCurrent(Math.min(state.current + 1, state.images.length - 1))
+  },
+  setCurrent: i => (state, actions) => {
+    actions.zoomOut()
+    return { current: i }
+  },
   playPause: () => (state, actions) =>
     state.playing ? actions.pause() : actions.play(),
   play: () => (state, actions) => {
-    const id = setInterval(actions.next, state.playSpeed)
+    const intervalId = setInterval(actions.next, state.playSpeed)
     return {
       playing: true,
-      intervalId: id,
+      intervalId,
     }
   },
   pause: () => (state, actions) => {
@@ -102,7 +106,7 @@ const view = (state, actions) =>
     ]),
     h('div', { class: 'backdrop' }, [
       h('img', {
-        class: state.zoomed ? 'zoom-in' : 'no-zoom',
+        class: `poster ${state.zoomed ? 'zoom-in' : 'no-zoom'}`,
         onclick: () => actions.toggleZoom(),
         src: state.images[state.current],
       }),
