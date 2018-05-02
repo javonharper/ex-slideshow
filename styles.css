@@ -1,8 +1,8 @@
 /* @format */
 
 body {
-  margin: 0 !important;
-  padding: 0 !important;
+  /* margin: 0 !important; */
+  /* padding: 0 !important; */
 }
 
 #ex {
@@ -68,6 +68,10 @@ body {
   padding-right: 150px;
   overflow-x: auto;
   height: 100px;
+}
+
+.thumbnails:hover {
+  background-color: black;
 }
 
 .thumbnail {
